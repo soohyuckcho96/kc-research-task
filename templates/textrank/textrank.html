@@ -1,0 +1,19 @@
+{% extends 'base.html' %}
+
+{% block header %}
+  <h1>{% block title %}Text Rank{% endblock %}</h1>
+{% endblock %}
+
+{% block content %}
+  <form method="post">
+    Paste text here:
+    <div id="source-div">
+      <textarea name="source" id="source" spellcheck="false">{{ request.form['source'] }}</textarea>
+    </div>
+    <input type="submit" value="Visualize">
+  </form>
+
+  <div>
+    Result comes here
+  </div>
+{% endblock %}

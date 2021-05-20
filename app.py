@@ -24,7 +24,7 @@ def create_app(test_config=None):
         pass
 
     # a simple page that says hello
-    @app.route('/')
+    @app.route('/hello')
     def hello():
         return 'Hello, World!'
 
@@ -37,5 +37,9 @@ def create_app(test_config=None):
     import blog
     app.register_blueprint(blog.bp)
     app.add_url_rule('/', endpoint='index')
+
+    import textrank
+    app.register_blueprint(textrank.bp)
+    # app.add_url_rule('/', endpoint='textrank')
 
     return app
