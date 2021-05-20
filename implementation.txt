@@ -1,1 +1,16 @@
-# this is a test file
+Co-occurrence relation:
+    two vertices are connected if their corresponding lexical units co-occur within a window of max N words
+    2 <= N <= 10
+    express relation between syntactic elements + cohesion indicators
+    restricted with syntactic filter ex) V : nouns, verbs / E : relation between nouns and verbs
+
+Steps:
+    1. text is tokenized, and annotated with part of speech tags / consider only single words as candidates for addition to the graph
+    2. all lexicaal units that passes the syntactic filter are added to the graph / edge is added between those lexical units that co-occur within N words / initial score value of 1 / threshold of 0.0001
+    3. sort the vertices in reverse order of their score / top T vertices in the ranking are retained for post-processing / T = |V| / 3
+    4. mark the potential keywords / sequences of adjacent keywords are collapsed into a multi-word keyword => if chosen keywords are adjacent, suppose they are one key word
+
+Evaluations:
+    500 abstracts from Inspec database
+    unsupervised
+    precision, recall, F-measure
