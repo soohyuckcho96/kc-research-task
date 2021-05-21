@@ -57,7 +57,7 @@ def combine_and_sort(potential_keywords, potential_keywords_score):
     min_val = min(potential_keywords_score)
     max_val = max(potential_keywords_score)
     def f(x):
-        return 2 * (x - min_val) / (max_val - min_val) * x + 1
+        return 2 * (x - min_val) / (max_val - min_val) + 1
 
     kw_score = []
     for i in range(len(potential_keywords)):
