@@ -2,7 +2,6 @@ from flask import (
     Blueprint, flash, g, redirect, render_template, request, session, url_for
 )
 
-import math
 from lexicalgraph import LexicalGraph
 from constant import *
 from function import *
@@ -16,6 +15,7 @@ def textrank():
     if request.method == 'POST':
         source = request.form['source']
         N = int(request.form['window'])
+        tag = request.form['tag']
         error = None
 
         if not source:
@@ -27,7 +27,7 @@ def textrank():
             elif word_cnt > MAX_TEXT_LIMIT:
                 error = "The text is too long"
             else:
-                filtered_tokens = syntactic_filter(source)
+                filtered_tokens = syntactic_filter(source, tag)
                 graph = LexicalGraph(filtered_tokens, N)
                 iter_cnt = graph.calculate_textrank()
                 rev_sorted_scores = sorted(graph.V.items(), key=lambda x : x[1], reverse=True)

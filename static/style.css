@@ -31,3 +31,4 @@ nav ul li a, nav ul li span, header .action { display: block; padding: 0.5rem; }
 .content #cloud #word-cloud .score { color: grey; font-size: small;}
 input.danger { color: #cc2f2e; }
 input[type=submit] { align-self: start; min-width: 10em; }
+table td { width: 25%; text-align: center;}
