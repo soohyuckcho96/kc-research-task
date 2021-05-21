@@ -5,6 +5,7 @@ from flask import (
 import nltk
 from nltk.tokenize import word_tokenize
 from collections import Counter
+import math
 
 # from graph import LexcicalGralph
 
@@ -104,6 +105,20 @@ def textrank():
                 filtered_tokens = syntactic_filter(source)
                 graph = LexicalGraph(filtered_tokens, N)
                 iter_cnt = graph.calculate_textrank()
+                rev_sorted_scores = sorted(graph.V.items(), key=lambda x : x[1], reverse=True)
+
+                potential_keywords = []
+                potential_keywords_score = []
+                cur_score = math.inf
+                for i in range(graph.T):
+                    # if cur_score == rev_sorted_scores[i][1]:
+                    #     break
+                    # else:
+                    cur_score = rev_sorted_scores[i][1]
+                    word = graph.conversion[rev_sorted_scores[i][0]]
+                    potential_keywords.append(word)
+                    potential_keywords_score.append(cur_score)
+                print(potential_keywords, potential_keywords_score)
 
         
         if error is not None:
