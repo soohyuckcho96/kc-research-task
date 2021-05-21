@@ -15,7 +15,11 @@
     <input type="submit" value="Visualize">
   </form>
 
-  <div>
-    Result comes here
+  <div id="result">
+    Iterations: {{ g.iter_cnt }}
+    <div id="cloud">
+      Word Cloud: {{ g.potential_keywords }}
+    </div>
+    Keywords: {{ g.final_keywords }}
   </div>
 {% endblock %}

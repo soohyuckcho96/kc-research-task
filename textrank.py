@@ -2,112 +2,13 @@ from flask import (
     Blueprint, flash, g, redirect, render_template, request, session, url_for
 )
 
-import nltk
-from nltk.tokenize import word_tokenize
-from collections import Counter
 import math
-
-# from graph import LexcicalGralph
+from lexicalgraph import LexicalGraph
+from constant import *
+from function import *
 
 # bp = Blueprint('textrank', __name__, url_prefix="/tr")
 bp = Blueprint('textrank', __name__)
-
-MIN_TEXT_LIMIT = 50
-MAX_TEXT_LIMIT = 350
-
-NOUN_GROUP = ['NN', 'NNS', 'NNP', 'NNPS']
-PRONOUN_GROUP = ['PRP', 'PRP$', 'WP', 'WP$']
-VERB_GROUP = ['VB', 'VBD', 'VBG', 'VBN', 'VBP', 'VBZ']
-ADJECTIVE_GROUP = ['JJ', 'JJR', 'JJS']
-ADVERB_GROUP = ['RB', 'RBR', 'RBS', 'WRB']
-PREPOSITION_GROUP = ['IN']
-CONJUNCTION_GROUP = ['CC', 'IN']
-INTERJECTION_GROUP = ['UH']
-
-class LexicalGraph(object):
-    def __init__(self, filtered_tokens, N):
-        self.total_cnt = len(filtered_tokens)
-        words = [t[1] for t in filtered_tokens]
-        unique_words = list(Counter(words))
-        self.unique_cnt = len(unique_words)
-        self.T = self.unique_cnt // 3
-        self.conversion = {unique_words[i] : i for i in range(len(unique_words))}
-        self.V = {self.conversion[v] : 1 for v in unique_words}
-        self.E = {self.conversion[v] : [] for v in unique_words}
-        self.jump_factor = 0.85
-        self.threshold = 0.0001
-
-        for i in range(self.total_cnt):
-            token = filtered_tokens[i]
-            for j in range(N):
-                if i + j + 1 >= self.total_cnt:
-                    break
-                else:
-                    next_token = filtered_tokens[i + j + 1]
-                    if token[0] + N < next_token[0]:
-                        break
-                    else:
-                        idx = self.conversion[token[1]]
-                        next_idx = self.conversion[next_token[1]]
-                        if next_idx not in self.E[idx]:
-                            self.E[idx].append(next_idx)
-                            self.E[next_idx].append(idx)
-
-        self.conversion = {v : k for k, v in self.conversion.items()}
-        
-    def score_of(self, word):
-        neighbor_list = self.E[word]
-        temp = 0
-        for neighbor in neighbor_list:
-            temp += self.V[neighbor] / len(self.E[neighbor])
-        return (1 - self.jump_factor) + self.jump_factor * temp
-
-    def calculate_textrank(self):
-        flags = [False for i in range(self.unique_cnt)]
-        i = 0
-        iter_cnt = 0
-        while not all(flags):
-            prev_score = self.V[i]
-            curr_score = self.score_of(i)
-            self.V[i] = curr_score
-            if abs(prev_score - curr_score) < self.threshold:
-                flags[i] = True
-            i = (i + 1) % self.unique_cnt
-            if i == 0:
-                iter_cnt += 1
-        return iter_cnt
-
-def syntactic_filter(source, tag1=NOUN_GROUP, tag2=ADJECTIVE_GROUP):
-    annotated_text_token = nltk.pos_tag(word_tokenize(source.lower()))
-    filtered_tokens = []
-    for i in range(len(annotated_text_token)):
-        token = annotated_text_token[i]
-        if token[1] in tag1 or token[1] in tag2:
-            new_token = (i, token[0], token[1])
-            filtered_tokens.append(new_token)
-    return filtered_tokens
-
-def combine_multi_word_keyword(potential_keywords, filtered_tokens):
-    relation = [t for t in filtered_tokens if t[1] in potential_keywords]
-    keywords = []
-    i = 0
-    while i < len(relation):
-        idx = relation[i][0]
-        keyword = relation[i][1]
-        flag = True
-        j = i + 1
-        while flag and j < len(relation):
-            next_idx = relation[j][0]
-            if next_idx == idx + 1:
-                keyword += ' ' + relation[j][1]
-                idx = next_idx
-                j += 1
-            else:
-                flag = False
-        i = j
-        if keyword not in keywords:
-            keywords.append(keyword)
-    return keywords
 
 # @bp.route('/textrank', methods=('GET', 'POST'))
 @bp.route('/', methods=('GET', 'POST'))
@@ -128,25 +29,30 @@ def textrank():
             else:
                 filtered_tokens = syntactic_filter(source)
                 graph = LexicalGraph(filtered_tokens, N)
-                g.iter_cnt = graph.calculate_textrank()
+                iter_cnt = graph.calculate_textrank()
                 rev_sorted_scores = sorted(graph.V.items(), key=lambda x : x[1], reverse=True)
 
-                g.potential_keywords = []
-                g.potential_keywords_score = []
+                potential_keywords = []
+                potential_keywords_score = []
                 cur_score = math.inf
                 for i in range(graph.T):
                     cur_score = rev_sorted_scores[i][1]
                     word_idx = rev_sorted_scores[i][0]
                     word = graph.conversion[word_idx]
-                    g.potential_keywords.append(word)
-                    g.potential_keywords_score.append(cur_score)
+                    potential_keywords.append(word)
+                    potential_keywords_score.append(cur_score)
                 
-                g.final_keywords = combine_multi_word_keyword(g.potential_keywords, filtered_tokens)
+                final_keywords = combine_multi_word_keyword(g.potential_keywords, filtered_tokens)
 
-                print(g.iter_cnt)
-                print(g.potential_keywords)
-                print(g.potential_keywords_score)
-                print(g.final_keywords)
+                session['iter_cnt'] = iter_cnt
+                session['pot_kw'] = potential_keywords
+                session['pot_kw_score'] = potential_keywords_score
+                session['final_kw'] = final_keywords
+
+                # print(g.iter_cnt)
+                # print(g.potential_keywords)
+                # print(g.potential_keywords_score)
+                # print(g.final_keywords)
 
         if error is not None:
             flash(error)
@@ -154,7 +60,3 @@ def textrank():
             return redirect(url_for('textrank.textrank'))
 
     return render_template('textrank/textrank.html')
-
-# @bp.route('/result')
-# def result():
-#     return render_template('textrank/result.html')
