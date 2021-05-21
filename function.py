@@ -12,7 +12,7 @@ def syntactic_filter(source, tag1=NOUN_GROUP, tag2=ADJECTIVE_GROUP):
             filtered_tokens.append(new_token)
     return filtered_tokens
 
-def combine_multi_word_keyword(potential_keywords, filtered_tokens):
+def multi_word_keyword(potential_keywords, filtered_tokens):
     relation = [t for t in filtered_tokens if t[1] in potential_keywords]
     keywords = []
     i = 0
@@ -33,3 +33,17 @@ def combine_multi_word_keyword(potential_keywords, filtered_tokens):
         if keyword not in keywords:
             keywords.append(keyword)
     return keywords
+
+def combine_and_sort(potential_keywords, potential_keywords_score):
+    min_val = min(potential_keywords_score)
+    max_val = max(potential_keywords_score)
+    def f(x):
+        return 2 * (x - min_val) / (max_val - min_val) * x + 1
+
+    kw_score = []
+    for i in range(len(potential_keywords)):
+        kw = potential_keywords[i]
+        score = potential_keywords_score[i]
+        ts = round(f(score), 2)
+        kw_score.append((kw, score, ts))
+    return sorted(kw_score, key=lambda x : x[0])

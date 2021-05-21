@@ -23,23 +23,6 @@ def create_app(test_config=None):
     except OSError:
         pass
 
-    # a simple page that says hello
-    # @app.route('/hello')
-    # def hello():
-    #     for i in range(10):
-    #         print(i)
-    #     return 'Hello, World!'
-
-    import db
-    db.init_app(app)
-
-    import auth
-    app.register_blueprint(auth.bp)
-
-    import blog
-    app.register_blueprint(blog.bp)
-    # app.add_url_rule('/', endpoint='index')
-
     import textrank
     app.register_blueprint(textrank.bp)
     app.add_url_rule('/', endpoint='textrank')

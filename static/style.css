@@ -23,5 +23,11 @@ nav ul li a, nav ul li span, header .action { display: block; padding: 0.5rem; }
 .content input, .content textarea { margin-bottom: 1em; }
 .content textarea { min-height: 12em; resize: vertical; }
 .content #source-div { margin: 1em 0 0; }
+.content #result { margin: 1em; }
+.content #result .emphasis { font-weight: bold; }
+.content #result .boundary { margin: 0.5em 1em; padding: 0.5em;}
+.content #iteration, #cloud, #keyword { border-bottom: 1px solid grey; }
+.content #cloud #word-cloud { padding: 1em; border: 2px solid skyblue; border-radius: 10px;}
+.content #cloud #word-cloud .score { color: grey; font-size: small;}
 input.danger { color: #cc2f2e; }
 input[type=submit] { align-self: start; min-width: 10em; }

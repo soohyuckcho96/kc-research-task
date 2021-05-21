@@ -31,28 +31,14 @@ def textrank():
                 graph = LexicalGraph(filtered_tokens, N)
                 iter_cnt = graph.calculate_textrank()
                 rev_sorted_scores = sorted(graph.V.items(), key=lambda x : x[1], reverse=True)
+                potential_keywords, potential_keywords_score = graph.get_potentials(rev_sorted_scores)                
+                final_keywords = multi_word_keyword(potential_keywords, filtered_tokens)
+                kw_score = combine_and_sort(potential_keywords, potential_keywords_score)
 
-                potential_keywords = []
-                potential_keywords_score = []
-                cur_score = math.inf
-                for i in range(graph.T):
-                    cur_score = rev_sorted_scores[i][1]
-                    word_idx = rev_sorted_scores[i][0]
-                    word = graph.conversion[word_idx]
-                    potential_keywords.append(word)
-                    potential_keywords_score.append(cur_score)
-                
-                final_keywords = combine_multi_word_keyword(g.potential_keywords, filtered_tokens)
-
+                session.clear()
                 session['iter_cnt'] = iter_cnt
-                session['pot_kw'] = potential_keywords
-                session['pot_kw_score'] = potential_keywords_score
+                session['kw_score'] = kw_score
                 session['final_kw'] = final_keywords
-
-                # print(g.iter_cnt)
-                # print(g.potential_keywords)
-                # print(g.potential_keywords_score)
-                # print(g.final_keywords)
 
         if error is not None:
             flash(error)

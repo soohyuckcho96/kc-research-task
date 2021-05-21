@@ -10,16 +10,33 @@
     <!-- <div id="source-div"> -->
       <textarea name="source" id="source" spellcheck="false">{{ request.form['source'] }}</textarea>
     <!-- </div> -->
-    <label for="window">Window</label>
-    <input type="number" name="window" id="window" value="2" required>
+    <label for="window">Window (between 2 and 10)</label>
+    <input type="number" name="window" id="window" value="2" min="2" max="10" required>
     <input type="submit" value="Visualize">
   </form>
 
   <div id="result">
-    Iterations: {{ g.iter_cnt }}
-    <div id="cloud">
-      Word Cloud: {{ g.potential_keywords }}
+    <span class="emphasis">Results:</span>
+    <div id="iteration" class="boundary">
+      <span class="emphasis">Iterations:</span> {{ session['iter_cnt'] }}
     </div>
-    Keywords: {{ g.final_keywords }}
+    <div id="cloud" class="boundary">
+      <span class="emphasis">Word Cloud:</span>
+      <div id="word-cloud">
+        {% for kws in session['kw_score'] %}
+          <span style="font-size: {{ kws[2] }}em;" >{{ kws[0] }}</span><span class="score"> ({{ kws[1] }})</span>
+        {% endfor %}
+      </div>
+    </div>
+    <div id="keyword" class="boundary">
+      <span class="emphasis">Keywords:</span>
+        {% for word in session['final_kw'] %}
+          {% if not loop.last %}
+            <span>{{ word }};</span>
+          {% else %}
+            <span>{{ word }}</span>
+          {% endif %}
+        {% endfor %}
+    </div>
   </div>
 {% endblock %}

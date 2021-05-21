@@ -1,4 +1,5 @@
 from collections import Counter
+import math
 
 class LexicalGraph(object):
     def __init__(self, filtered_tokens, N):
@@ -52,3 +53,14 @@ class LexicalGraph(object):
             if i == 0:
                 iter_cnt += 1
         return iter_cnt
+
+    def get_potentials(self, rev_sorted_scores):
+        potential_keywords = []
+        potential_keywords_score = []
+        cur_score = math.inf
+        for i in range(self.T):
+            cur_score = rev_sorted_scores[i][1]
+            word = self.conversion[rev_sorted_scores[i][0]]
+            potential_keywords.append(word)
+            potential_keywords_score.append(round(cur_score, 4))
+        return potential_keywords, potential_keywords_score
