@@ -6,7 +6,7 @@ def create_app(test_config=None):
     # create and configure the app
     app = Flask(__name__, instance_relative_config=True)
     app.config.from_mapping(
-        SECRET_KEY='dev',
+        SECRET_KEY='textrank-soohyuckcho',
         DATABASE=os.path.join(app.instance_path, 'flaskr.sqlite'),
     )
 
@@ -24,9 +24,11 @@ def create_app(test_config=None):
         pass
 
     # a simple page that says hello
-    @app.route('/hello')
-    def hello():
-        return 'Hello, World!'
+    # @app.route('/hello')
+    # def hello():
+    #     for i in range(10):
+    #         print(i)
+    #     return 'Hello, World!'
 
     import db
     db.init_app(app)
@@ -36,10 +38,10 @@ def create_app(test_config=None):
 
     import blog
     app.register_blueprint(blog.bp)
-    app.add_url_rule('/', endpoint='index')
+    # app.add_url_rule('/', endpoint='index')
 
     import textrank
     app.register_blueprint(textrank.bp)
-    # app.add_url_rule('/', endpoint='textrank')
+    app.add_url_rule('/', endpoint='textrank')
 
     return app

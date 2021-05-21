@@ -6,10 +6,12 @@
 
 {% block content %}
   <form method="post">
-    Paste text here:
-    <div id="source-div">
+    <label for="source">Paper Abstract</label>
+    <!-- <div id="source-div"> -->
       <textarea name="source" id="source" spellcheck="false">{{ request.form['source'] }}</textarea>
-    </div>
+    <!-- </div> -->
+    <label for="window">Window</label>
+    <input type="number" name="window" id="window" value="2" required>
     <input type="submit" value="Visualize">
   </form>
 
