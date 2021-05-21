@@ -52,6 +52,8 @@ class LexicalGraph(object):
                         if next_idx not in self.E[idx]:
                             self.E[idx].append(next_idx)
                             self.E[next_idx].append(idx)
+
+        self.conversion = {v : k for k, v in self.conversion.items()}
         
     def score_of(self, word):
         neighbor_list = self.E[word]
@@ -85,12 +87,34 @@ def syntactic_filter(source, tag1=NOUN_GROUP, tag2=ADJECTIVE_GROUP):
             filtered_tokens.append(new_token)
     return filtered_tokens
 
+def combine_multi_word_keyword(potential_keywords, filtered_tokens):
+    relation = [t for t in filtered_tokens if t[1] in potential_keywords]
+    keywords = []
+    i = 0
+    while i < len(relation):
+        idx = relation[i][0]
+        keyword = relation[i][1]
+        flag = True
+        j = i + 1
+        while flag and j < len(relation):
+            next_idx = relation[j][0]
+            if next_idx == idx + 1:
+                keyword += ' ' + relation[j][1]
+                idx = next_idx
+                j += 1
+            else:
+                flag = False
+        i = j
+        if keyword not in keywords:
+            keywords.append(keyword)
+    return keywords
+
 # @bp.route('/textrank', methods=('GET', 'POST'))
 @bp.route('/', methods=('GET', 'POST'))
 def textrank():
     if request.method == 'POST':
         source = request.form['source']
-        N = request.form['window']
+        N = int(request.form['window'])
         error = None
 
         if not source:
@@ -104,23 +128,26 @@ def textrank():
             else:
                 filtered_tokens = syntactic_filter(source)
                 graph = LexicalGraph(filtered_tokens, N)
-                iter_cnt = graph.calculate_textrank()
+                g.iter_cnt = graph.calculate_textrank()
                 rev_sorted_scores = sorted(graph.V.items(), key=lambda x : x[1], reverse=True)
 
-                potential_keywords = []
-                potential_keywords_score = []
+                g.potential_keywords = []
+                g.potential_keywords_score = []
                 cur_score = math.inf
                 for i in range(graph.T):
-                    # if cur_score == rev_sorted_scores[i][1]:
-                    #     break
-                    # else:
                     cur_score = rev_sorted_scores[i][1]
-                    word = graph.conversion[rev_sorted_scores[i][0]]
-                    potential_keywords.append(word)
-                    potential_keywords_score.append(cur_score)
-                print(potential_keywords, potential_keywords_score)
+                    word_idx = rev_sorted_scores[i][0]
+                    word = graph.conversion[word_idx]
+                    g.potential_keywords.append(word)
+                    g.potential_keywords_score.append(cur_score)
+                
+                g.final_keywords = combine_multi_word_keyword(g.potential_keywords, filtered_tokens)
 
-        
+                print(g.iter_cnt)
+                print(g.potential_keywords)
+                print(g.potential_keywords_score)
+                print(g.final_keywords)
+
         if error is not None:
             flash(error)
         else:
