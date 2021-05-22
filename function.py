@@ -1,6 +1,8 @@
+from math import sin
 import nltk
 from nltk.tokenize import word_tokenize
 from constant import *
+from collections import Counter
 
 def syntactic_filter(source, tag):
     annotated_text_token = nltk.pos_tag(word_tokenize(source.lower()))
@@ -51,6 +53,21 @@ def multi_word_keyword(potential_keywords, filtered_tokens):
         i = j
         if keyword not in keywords:
             keywords.append(keyword)
+    return keywords
+
+def remove_duplicate(keywords):
+    single = []
+    multi = []
+    for kw in keywords:
+        if len(kw.split()) > 1:
+            multi.append(kw)
+        else:
+            single.append(kw)
+    for s in single:
+        for m in multi:
+            if s in m:
+                keywords.remove(s)
+                break
     return keywords
 
 def combine_and_sort(potential_keywords, potential_keywords_score):

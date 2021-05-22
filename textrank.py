@@ -6,10 +6,8 @@ from lexicalgraph import LexicalGraph
 from constant import *
 from function import *
 
-# bp = Blueprint('textrank', __name__, url_prefix="/tr")
 bp = Blueprint('textrank', __name__)
 
-# @bp.route('/textrank', methods=('GET', 'POST'))
 @bp.route('/', methods=('GET', 'POST'))
 def textrank():
     if request.method == 'POST':
@@ -32,7 +30,7 @@ def textrank():
                 iter_cnt = graph.calculate_textrank()
                 rev_sorted_scores = sorted(graph.V.items(), key=lambda x : x[1], reverse=True)
                 potential_keywords, potential_keywords_score = graph.get_potentials(rev_sorted_scores)                
-                final_keywords = multi_word_keyword(potential_keywords, filtered_tokens)
+                final_keywords = remove_duplicate(multi_word_keyword(potential_keywords, filtered_tokens))
                 kw_score = combine_and_sort(potential_keywords, potential_keywords_score)
 
                 session.clear()
