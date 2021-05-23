@@ -43,7 +43,6 @@
       <div id="word-cloud">
         {% for kws in session['kw_score'] %}
           <span style="font-size: {{ kws[2] }}em;">{{ kws[0] }}</span><span class="score"> ({{ kws[1] }})</span>
-          <!-- <a href="{{kws[2]}}"></a> -->
         {% endfor %}
       </div>
     </div>
