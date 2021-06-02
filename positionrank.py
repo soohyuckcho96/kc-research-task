@@ -6,10 +6,10 @@ from lexicalgraph import LexicalGraph
 from constant import *
 from function import *
 
-bp = Blueprint('textrank', __name__, url_prefix='/tr')
+bp = Blueprint('positionrank', __name__, url_prefix='/pr')
 
 @bp.route('/', methods=('GET', 'POST'))
-def textrank():
+def positionrank():
     if request.method == 'POST':
         source = request.form['source']
         N = int(request.form['window'])
@@ -41,6 +41,6 @@ def textrank():
         if error is not None:
             flash(error)
         else:
-            return redirect(url_for('textrank.textrank'))
+            return redirect(url_for('positionrank.positionrank'))
 
-    return render_template('textrank/textrank.html')
+    return render_template('positionrank/positionrank.html')

@@ -1,0 +1,60 @@
+{% extends 'base.html' %}
+
+{% block header %}
+  <h1>{% block title %}Position Rank{% endblock %}</h1>
+{% endblock %}
+
+{% block content %}
+  <form method="post">
+    <label for="source">Paper Abstract</label>
+    <textarea name="source" id="source" spellcheck="false">{{ request.form['source'] }}</textarea>
+
+    <label for="window">Window (between 2 and 10)</label>
+    <input type="number" name="window" id="window" value="2" min="2" max="10" required/>
+
+    <label for="tag">Parts of Speech</labeL></br>
+    <table>
+      <tr>
+        <td>
+          <label for="all"><input type="radio" id="all" name="tag" value="all" required/>All (N/V/ADJ/ADV)</labeL>
+        </td>
+        <td>
+          <label for="n"><input type="radio" id="n" name="tag" value="n"/>Nouns</label>
+        </td>
+        <td>
+          <label for="nv"><input type="radio" id="nv" name="tag" value="nv"/>Nouns/Verbs</label>
+        </td>
+        <td>
+          <label for="nj"><input type="radio" id="nj" name="tag" value="nj"/>Nouns/Adjectives</label>
+        </td>
+      </tr>
+    </table>
+    <br>
+    <input type="submit" value="Visualize">
+  </form>
+
+  <div id="result">
+    <span class="emphasis">Results:</span>
+    <div id="iteration" class="boundary">
+      <span class="emphasis">Iterations:</span> {{ session['iter_cnt'] }}
+    </div>
+    <div id="cloud" class="boundary">
+      <span class="emphasis">Word Cloud:</span>
+      <div id="word-cloud">
+        {% for kws in session['kw_score'] %}
+          <span style="font-size: {{ kws[2] }}em;">{{ kws[0] }}</span><span class="score"> ({{ kws[1] }})</span>
+        {% endfor %}
+      </div>
+    </div>
+    <div id="keyword" class="boundary">
+      <span class="emphasis">Keywords:</span>
+        {% for word in session['final_kw'] %}
+          {% if not loop.last %}
+            <span>{{ word }};</span>
+          {% else %}
+            <span>{{ word }}</span>
+          {% endif %}
+        {% endfor %}
+    </div>
+  </div>
+{% endblock %}
