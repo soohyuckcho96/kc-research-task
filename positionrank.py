@@ -19,7 +19,6 @@ def positionrank():
             error = "The text is empty"
         else:
             filtered_tokens = pr_filter(source)
-            print(filtered_tokens)
             graph = PRGraph(filtered_tokens, w)
             iter_cnt = graph.calculate_positionrank()
             kp_score = {}
