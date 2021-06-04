@@ -20,4 +20,7 @@ def create_app(test_config=None):
     import positionrank
     app.register_blueprint(positionrank.bp)
 
+    import multipartite
+    app.register_blueprint(multipartite.bp)
+
     return app

@@ -3,12 +3,13 @@ from flask import (
 )
 
 from lexicalgraph import PRGraph
+from constant import *
 from function import *
 
-bp = Blueprint('positionrank', __name__, url_prefix='/pr')
+bp = Blueprint('multipartite', __name__, url_prefix='/mp')
 
 @bp.route('/', methods=('GET', 'POST'))
-def positionrank():
+def multipartite():
     if request.method == 'POST':
         source = request.form['source']
         w = int(request.form['window'])
@@ -34,6 +35,6 @@ def positionrank():
         if error is not None:
             flash(error)
         else:
-            return redirect(url_for('positionrank.positionrank'))
+            return redirect(url_for('multipartite.multipartite'))
 
-    return render_template('positionrank/positionrank.html')
+    return render_template('multipartite/multipartite.html')

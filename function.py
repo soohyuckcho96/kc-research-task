@@ -8,30 +8,19 @@ from constant import *
 def tr_filter(source, tag):
     annotated_text_token = nltk.pos_tag(word_tokenize(source.lower()))
     filtered_tokens = []
+    pos_group = []
     if tag == 'all':
-        for i in range(len(annotated_text_token)):
-            token = annotated_text_token[i]
-            if token[1] in NOUN_GROUP or token[1] in VERB_GROUP or token[1] in ADJECTIVE_GROUP or token[1] in ADVERB_GROUP:
-                new_token = (i, token[0], token[1])
-                filtered_tokens.append(new_token)
+        pos_group = NOUN_GROUP + VERB_GROUP + ADJECTIVE_GROUP + ADVERB_GROUP
     elif tag == 'n':
-        for i in range(len(annotated_text_token)):
-            token = annotated_text_token[i]
-            if token[1] in NOUN_GROUP:
-                new_token = (i, token[0], token[1])
-                filtered_tokens.append(new_token)
+        pos_group = NOUN_GROUP
     elif tag == 'nv':
-        for i in range(len(annotated_text_token)):
-            token = annotated_text_token[i]
-            if token[1] in NOUN_GROUP or token[1] in VERB_GROUP:
-                new_token = (i, token[0], token[1])
-                filtered_tokens.append(new_token)
+        pos_group = NOUN_GROUP + VERB_GROUP
     else: # tag == 'nj'
-        for i in range(len(annotated_text_token)):
-            token = annotated_text_token[i]
-            if token[1] in NOUN_GROUP or token[1] in ADJECTIVE_GROUP:
-                new_token = (i, token[0], token[1])
-                filtered_tokens.append(new_token)
+        pos_group = NOUN_GROUP + ADJECTIVE_GROUP
+    for i in range(len(annotated_text_token)):
+        token = annotated_text_token[i]
+        if token[1] in pos_group:
+            filtered_tokens.append((i, token[0], token[1]))
     return filtered_tokens
 
 def multi_word_keyword(potential_keywords, filtered_tokens):

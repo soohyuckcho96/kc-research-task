@@ -140,3 +140,10 @@ class PRGraph(object):
             if i == 0:
                 iter_cnt += 1
         return iter_cnt
+
+##################################################
+## Multipartite ##
+##################################################
+class MPGraph(object):
+    def __init__(self):
+        super().__init__()
