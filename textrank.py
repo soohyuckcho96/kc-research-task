@@ -2,11 +2,11 @@ from flask import (
     Blueprint, flash, redirect, render_template, request, session, url_for
 )
 
-from lexicalgraph import LexicalGraph
+from lexicalgraph import TRGraph
 from constant import *
 from function import *
 
-bp = Blueprint('textrank', __name__, url_prefix='/tr')
+bp = Blueprint('textrank', __name__)
 
 @bp.route('/', methods=('GET', 'POST'))
 def textrank():
@@ -26,7 +26,7 @@ def textrank():
                 error = "The text is too long"
             else:
                 filtered_tokens = syntactic_filter(source, tag)
-                graph = LexicalGraph(filtered_tokens, N)
+                graph = TRGraph(filtered_tokens, N)
                 iter_cnt = graph.calculate_textrank()
                 rev_sorted_scores = sorted(graph.V.items(), key=lambda x : x[1], reverse=True)
                 potential_keywords, potential_keywords_score = graph.get_potentials(rev_sorted_scores)                

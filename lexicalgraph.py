@@ -1,7 +1,7 @@
 from collections import Counter
 import math
 
-class LexicalGraph(object):
+class TRlGraph(object):
     def __init__(self, filtered_tokens, N):
         self.total_cnt = len(filtered_tokens)
         words = [t[1] for t in filtered_tokens]
@@ -64,3 +64,13 @@ class LexicalGraph(object):
             potential_keywords.append(word)
             potential_keywords_score.append(round(cur_score, 4))
         return potential_keywords, potential_keywords_score
+
+
+class PRGraph(object):
+    def __init__(self, filtered_tokens, N, k) -> None:
+        self.total_cnt = len(filtered_tokens)
+        words = [t[1] for t in filtered_tokens]
+        unique_words = list(Counter(words))
+        self.unique_cnt = len(unique_words)
+        self.conversion = {unique_words[i] : i for i in range(len(unique_words))}
+        self.V = {self.conversion[v] : 1 for v in unique_words}

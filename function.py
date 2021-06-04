@@ -1,8 +1,11 @@
-from math import sin
+# from math import sin
 import nltk
 from nltk.tokenize import word_tokenize
 from constant import *
-from collections import Counter
+# from collections import Counter
+# import stanfordnlp
+
+## TextRank ##
 
 def syntactic_filter(source, tag):
     annotated_text_token = nltk.pos_tag(word_tokenize(source.lower()))
@@ -83,3 +86,20 @@ def combine_and_sort(potential_keywords, potential_keywords_score):
         ts = round(f(score), 2)
         kw_score.append((kw, score, ts))
     return sorted(kw_score, key=lambda x : x[0])
+
+
+## PositionRank ##
+
+def pr_filter(source):
+    # stanfordnlp.download('en')
+    # nlp = stanfordnlp.Pipeline(processors = "tokenize, mwt, lemma, pos")
+    # doc = nlp(source)
+    # doc.sentences[0].print_tokens()
+    annotated_text_token = nltk.pos_tag(word_tokenize(source.lower()))
+    filtered_tokens = []
+    for i in range(len(annotated_text_token)):
+        token = annotated_text_token[i]
+        if token[1] in NOUN_GROUP or token[1] in ADJECTIVE_GROUP:
+            new_token = (i + 1, token[0], token[1])
+            filtered_tokens.append(new_token)
+    return filtered_tokens

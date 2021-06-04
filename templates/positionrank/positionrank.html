@@ -9,26 +9,11 @@
     <label for="source">Paper Abstract</label>
     <textarea name="source" id="source" spellcheck="false">{{ request.form['source'] }}</textarea>
 
-    <label for="window">Window (between 2 and 10)</label>
+    <label for="window">Window (between 2 and 10) : N</label>
     <input type="number" name="window" id="window" value="2" min="2" max="10" required/>
 
-    <label for="tag">Parts of Speech</labeL></br>
-    <table>
-      <tr>
-        <td>
-          <label for="all"><input type="radio" id="all" name="tag" value="all" required/>All (N/V/ADJ/ADV)</labeL>
-        </td>
-        <td>
-          <label for="n"><input type="radio" id="n" name="tag" value="n"/>Nouns</label>
-        </td>
-        <td>
-          <label for="nv"><input type="radio" id="nv" name="tag" value="nv"/>Nouns/Verbs</label>
-        </td>
-        <td>
-          <label for="nj"><input type="radio" id="nj" name="tag" value="nj"/>Nouns/Adjectives</label>
-        </td>
-      </tr>
-    </table>
+    <label for="window">Number of keyphrases (between 1 and 10) : k</label>
+    <input type="number" name="num" id="num" value="1" min="1" max="10" required/>
     <br>
     <input type="submit" value="Visualize">
   </form>

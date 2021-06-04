@@ -13,13 +13,9 @@ def create_app(test_config=None):
     except OSError:
         pass
 
-    @app.route('/hello')
-    def hello():
-        return 'Hello, World!'
-
     import textrank
     app.register_blueprint(textrank.bp)
-    # app.add_url_rule('/', endpoint='textrank')
+    app.add_url_rule('/', endpoint='textrank')
 
     import positionrank
     app.register_blueprint(positionrank.bp)
