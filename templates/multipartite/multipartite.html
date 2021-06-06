@@ -9,7 +9,7 @@
     <label for="source">Paper Abstract</label>
     <textarea name="source" id="source" spellcheck="false">{{ request.form['source'] }}</textarea>
 
-    <label for="window">Number of keyphrases (between 1 and 10) : k</label>
+    <label for="window">Number of keyphrases (between 1 and 10) : N</label>
     <input type="number" name="num" id="num" value="5" min="1" max="10" required/>
     <br>
     <input type="submit" value="Visualize">
@@ -17,8 +17,19 @@
 
   <div id="result">
     <span class="emphasis">Results:</span>
+    <div id="dimention" class="boundary">
+      <span class="emphasis">Complete {{ session['k'] }}-partite Graph</span> ({{ session['k'] }} distinct topics)
+    </div>
     <div id="iteration" class="boundary">
       <span class="emphasis">Iterations:</span> {{ session['iter_cnt'] }}
+    </div>
+    <div id="cloud" class="boundary">
+      <span class="emphasis">Word Cloud:</span>
+      <div id="word-cloud">
+        {% for kws in session['kw_score'] %}
+          <span style="font-size: {{ kws[2] }}em;">{{ kws[0] }}</span><span class="score"> ({{ kws[1] }})</span>
+        {% endfor %}
+      </div>
     </div>
     <div id="keyword" class="boundary">
       <span class="emphasis">Keywords:</span>

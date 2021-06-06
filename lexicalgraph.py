@@ -182,3 +182,39 @@ class MPGraph(object):
                     if topic_assign_dict[word_j] == topic_assign_dict[word_k] and word_j != word_k:
                         temp += self.M[k][i_idx]
                 self.M[i_idx][j_idx] += self.alpha * math.exp(1 / p_i) * temp
+        
+        self.conversion = {val : key for key, val in self.conversion.items()}
+
+    def score_of(self, i):
+        temp = 0
+        for j in range(self.unique_cnt):
+            if self.M[j][i] != 0:
+                temp += self.M[i][j] * self.V[j] / sum(self.M[j])
+        return (1 - self.damping_factor) + self.damping_factor * temp
+
+    def calculate_textrank(self):
+        flags = [False for _ in range(self.unique_cnt)]
+        i = 0
+        iter_cnt = 0
+        while not all(flags):
+            prev_score = self.V[i]
+            curr_score = self.score_of(i)
+            self.V[i] = curr_score
+            if abs(prev_score - curr_score) < self.threshold:
+                flags[i] = True
+            i = (i + 1) % self.unique_cnt
+            if i == 0:
+                iter_cnt += 1
+        return iter_cnt
+
+    def get_keyphrases(self, N):
+        rev_sorted_scores = sorted(self.V.items(), key=lambda x : x[1], reverse=True)
+        keyphrases = []
+        keyphrases_score = []
+        cur_score = math.inf
+        for i in range(N):
+            cur_score = rev_sorted_scores[i][1]
+            word = self.conversion[rev_sorted_scores[i][0]]
+            keyphrases.append(word)
+            keyphrases_score.append(round(cur_score, 4))
+        return keyphrases, keyphrases_score
