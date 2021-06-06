@@ -11,7 +11,7 @@ class TRGraph(object):
         unique_words = list(Counter(words))
         self.unique_cnt = len(unique_words)
         self.T = self.unique_cnt // 3
-        self.conversion = {unique_words[i] : i for i in range(len(unique_words))}
+        self.conversion = {unique_words[i] : i for i in range(self.unique_cnt)}
         self.V = {self.conversion[v] : 1 for v in unique_words}
         self.E = {self.conversion[v] : [] for v in unique_words}
         self.jump_factor = 0.85
@@ -43,7 +43,7 @@ class TRGraph(object):
         return (1 - self.jump_factor) + self.jump_factor * temp
 
     def calculate_textrank(self):
-        flags = [False for i in range(self.unique_cnt)]
+        flags = [False for _ in range(self.unique_cnt)]
         i = 0
         iter_cnt = 0
         while not all(flags):
@@ -77,10 +77,10 @@ class PRGraph(object):
         words = [t[1] for t in filtered_tokens]
         unique_words = list(Counter(words))
         self.unique_cnt = len(unique_words)
-        self.conversion = {unique_words[i] : i for i in range(len(unique_words))}
-        self.S = [1 / self.unique_cnt for i in range(self.unique_cnt)]
+        self.conversion = {unique_words[i] : i for i in range(self.unique_cnt)}
+        self.S = [1 / self.unique_cnt for _ in range(self.unique_cnt)]
         self.E = {self.conversion[v] : [] for v in unique_words}
-        self.M = [[0 for j in range(self.unique_cnt)] for i in range(self.unique_cnt)]
+        self.M = [[0 for _ in range(self.unique_cnt)] for _ in range(self.unique_cnt)]
         self.alpha = 0.85
         self.threshold = 0.001
 
@@ -109,7 +109,7 @@ class PRGraph(object):
         #         for j in range(self.unique_cnt):
         #             self.M_tilde[i][j] = self.M[i][j] / row_sum
         
-        self.p_tilde = [0 for i in range(self.unique_cnt)]
+        self.p_tilde = [0 for _ in range(self.unique_cnt)]
         for i in range(self.total_cnt):
             token = filtered_tokens[i]
             idx = self.conversion[token[1]]
@@ -127,7 +127,7 @@ class PRGraph(object):
         return (1 - self.alpha) * self.p_tilde[i] + self.alpha * temp * self.S[i]
 
     def calculate_positionrank(self):
-        flags = [False for i in range(self.unique_cnt)]
+        flags = [False for _ in range(self.unique_cnt)]
         i = 0
         iter_cnt = 0
         while not all(flags) and iter_cnt < 100:
@@ -145,5 +145,40 @@ class PRGraph(object):
 ## Multipartite ##
 ##################################################
 class MPGraph(object):
-    def __init__(self):
-        super().__init__()
+    def __init__(self, offset_dict, topic_assign_dict, first_occurence):
+        self.unique_cnt = len(offset_dict)
+        unique_words = list(offset_dict.keys())
+        self.conversion = {unique_words[i] : i for i in range(self.unique_cnt)}
+        self.V = {self.conversion[v] : 1 for v in unique_words}
+        self.M = [[0 for _ in range(self.unique_cnt)] for _ in range(self.unique_cnt)]
+        self.alpha = 1.1
+        self.damping_factor = 0.85
+        self.threshold = 0.0001
+
+        for i in range(self.unique_cnt):
+            word_i = unique_words[i]
+            for j in range(i + 1, self.unique_cnt):
+                word_j = unique_words[j]
+                if topic_assign_dict[word_i] != topic_assign_dict[word_j]:
+                    weight = 0
+                    for p_i in offset_dict[word_i]:
+                        for p_j in offset_dict[word_j]:
+                            weight += 1 / abs(p_i - p_j)
+                    self.M[i][j] = weight
+                    self.M[j][i] = weight
+
+        for i in range(len(first_occurence)):
+            word_i = first_occurence[i]
+            i_idx = self.conversion[word_i]
+            for j in range(len(first_occurence)):
+                if i == j:
+                    continue
+                word_j = first_occurence[j]
+                j_idx = self.conversion[word_j]
+                p_i = offset_dict[word_i][0]
+                temp = 0
+                for k in range(self.unique_cnt):
+                    word_k = unique_words[k]
+                    if topic_assign_dict[word_j] == topic_assign_dict[word_k] and word_j != word_k:
+                        temp += self.M[k][i_idx]
+                self.M[i_idx][j_idx] += self.alpha * math.exp(1 / p_i) * temp

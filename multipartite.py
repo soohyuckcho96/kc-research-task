@@ -12,15 +12,24 @@ bp = Blueprint('multipartite', __name__, url_prefix='/mp')
 def multipartite():
     if request.method == 'POST':
         source = request.form['source']
-        w = int(request.form['window'])
-        k = int(request.form['num'])
+        N = request.form['num']
         error = None
 
         if not source:
             error = "The text is empty"
         else:
-            # filtered_tokens = pr_filter(source)
-            # graph = MPGraph(filtered_tokens, w)
+            filtered_tokens = mp_filter(source)
+            # print(filtered_tokens, len(filtered_tokens))
+            candidate_list, offset_dict = get_candidates(filtered_tokens)
+            # print(candidate_list, len(candidate_list))
+            # print(offset_dict, len(offset_dict))
+            topic_group_dict, first_occurence = group_by_topics(candidate_list)
+            k = len(topic_group_dict)
+            # print(topic_group_dict)
+            print(first_occurence)
+            topic_assign_dict = topic_assignment(candidate_list, topic_group_dict)
+            # print(topic_assign_dict)
+            graph = MPGraph(offset_dict, topic_assign_dict, first_occurence)
             # iter_cnt = graph.calculate_positionrank()
             # kp_score = {}
             # for i in range(graph.unique_cnt):
