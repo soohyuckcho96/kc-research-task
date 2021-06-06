@@ -21,10 +21,7 @@ def positionrank():
             filtered_tokens = pr_filter(source)
             graph = PRGraph(filtered_tokens, w)
             iter_cnt = graph.calculate_positionrank()
-            kp_score = {}
-            for i in range(graph.unique_cnt):
-                kp_score[graph.conversion[i]] = graph.S[i]
-            final_keywords = get_top_n_grams(filtered_tokens, kp_score, k)
+            final_keywords = graph.get_top_n_grams(filtered_tokens, k)
 
             session.clear()
             session['iter_cnt'] = iter_cnt

@@ -57,16 +57,14 @@ class TRGraph(object):
                 iter_cnt += 1
         return iter_cnt
 
-    def get_potentials(self, rev_sorted_scores):
-        potential_keywords = []
-        potential_keywords_score = []
-        cur_score = math.inf
-        for i in range(self.T):
-            cur_score = rev_sorted_scores[i][1]
-            word = self.conversion[rev_sorted_scores[i][0]]
-            potential_keywords.append(word)
-            potential_keywords_score.append(round(cur_score, 4))
-        return potential_keywords, potential_keywords_score
+    def get_keywords(self):
+        kw = list(sorted(self.V.items(), key=lambda x : x[1], reverse=True)[:self.T])
+        keywords = []
+        keywords_score = []
+        for t in kw:
+            keywords.append(self.conversion[t[0]])
+            keywords_score.append(round(t[1], 4))
+        return keywords, keywords_score
 
 ##################################################
 ## PositionRank ##
@@ -141,6 +139,37 @@ class PRGraph(object):
                 iter_cnt += 1
         return iter_cnt
 
+    def get_top_n_grams(self, filtered_tokens, k):
+        kp_score = {}
+        for i in range(self.unique_cnt):
+            kp_score[self.conversion[i]] = self.S[i]
+        kw = {}
+        i = 0
+        while i < len(filtered_tokens):
+            token = filtered_tokens[i]
+            curr_idx = token[0]
+            curr_word = token[1]
+            curr_score = kp_score[curr_word]
+            j = i + 1
+            while j < len(filtered_tokens) and j < i + 3:
+                next_token = filtered_tokens[j]
+                next_idx = next_token[0]
+                if curr_idx + 1 != next_idx:
+                    break
+                else:
+                    curr_idx = next_idx
+                    curr_word += ' ' + next_token[1]
+                    curr_score += kp_score[next_token[1]]
+                    j += 1
+            i = j
+            if curr_word not in kw:
+                kw[curr_word] = curr_score
+        kw = list(sorted(kw.items(), key=lambda x : x[1], reverse=True)[:k])
+        final_keywords = []
+        for t in kw:
+            final_keywords.append(t[0])
+        return final_keywords
+
 ##################################################
 ## Multipartite ##
 ##################################################
@@ -208,13 +237,10 @@ class MPGraph(object):
         return iter_cnt
 
     def get_keyphrases(self, N):
-        rev_sorted_scores = sorted(self.V.items(), key=lambda x : x[1], reverse=True)
-        keyphrases = []
-        keyphrases_score = []
-        cur_score = math.inf
-        for i in range(N):
-            cur_score = rev_sorted_scores[i][1]
-            word = self.conversion[rev_sorted_scores[i][0]]
-            keyphrases.append(word)
-            keyphrases_score.append(round(cur_score, 4))
-        return keyphrases, keyphrases_score
+        kw = list(sorted(self.V.items(), key=lambda x : x[1], reverse=True)[:N])
+        keywords = []
+        keywords_score = []
+        for t in kw:
+            keywords.append(self.conversion[t[0]])
+            keywords_score.append(round(t[1], 4))
+        return keywords, keywords_score

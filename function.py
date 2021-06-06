@@ -3,14 +3,6 @@ from nltk.tokenize import word_tokenize
 from nltk.stem import PorterStemmer
 from constant import *
 
-import pandas as pd
-import numpy as np
-from matplotlib import pyplot as plt
-from sklearn.cluster import AgglomerativeClustering
-import scipy.cluster.hierarchy as sch
-
-# from gensim.models import Word2Vec
-
 ##################################################
 ## TextRank ##
 ##################################################
@@ -90,38 +82,10 @@ def pr_filter(source):
     filtered_tokens = []
     for i in range(len(annotated_text_token)):
         token = annotated_text_token[i]
-        if token[1] in NOUN_GROUP or token[1] in ADJECTIVE_GROUP:
+        if token[1] in NOUN_GROUP + ADJECTIVE_GROUP:
             new_token = (i + 1, token[0])
             filtered_tokens.append(new_token)
     return filtered_tokens
-
-def get_top_n_grams(filtered_tokens, kp_score, k):
-    kw = {}
-    i = 0
-    while i < len(filtered_tokens):
-        token = filtered_tokens[i]
-        curr_idx = token[0]
-        curr_word = token[1]
-        curr_score = kp_score[curr_word]
-        j = i + 1
-        while j < len(filtered_tokens) and j < i + 3:
-            next_token = filtered_tokens[j]
-            next_idx = next_token[0]
-            if curr_idx + 1 != next_idx:
-                break
-            else:
-                curr_idx = next_idx
-                curr_word += ' ' + next_token[1]
-                curr_score += kp_score[next_token[1]]
-                j += 1
-        i = j
-        if curr_word not in kw:
-            kw[curr_word] = curr_score
-    kw = list(sorted(kw.items(), key=lambda x : x[1], reverse=True)[:k])
-    final_keywords = []
-    for t in kw:
-        final_keywords.append(t[0])
-    return final_keywords
 
 ##################################################
 ## Multipartite ##
@@ -132,7 +96,7 @@ def mp_filter(source):
     filtered_tokens = []
     for i in range(len(annotated_text_token)):
         token = annotated_text_token[i]
-        if token[1] in NOUN_GROUP or token[1] in ADJECTIVE_GROUP:
+        if token[1] in NOUN_GROUP + ADJECTIVE_GROUP:
             new_token = (i, token[0], ps.stem(token[0]), token[1])
             filtered_tokens.append(new_token)
     return filtered_tokens
@@ -173,8 +137,8 @@ def is_similar(target, abbr_group, topic):
     topic_split = topic.split()
     target_set = set(target_split)
     topic_set = set(topic_split)
-    wrt_target = len(list(target_set & topic_set)) / len(target_split) > 0.25
-    wrt_topic = len(list(target_set & topic_set)) / len(topic_split) > 0.25
+    wrt_target = len(list(target_set & topic_set)) / len(target_split) > TOPIC_SIMILARITY
+    wrt_topic = len(list(target_set & topic_set)) / len(topic_split) > TOPIC_SIMILARITY
     has_abbr = False
     for a in abbr_group:
         has_abbr = a in topic_split

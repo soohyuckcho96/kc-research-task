@@ -28,10 +28,9 @@ def textrank():
                 filtered_tokens = tr_filter(source, tag)
                 graph = TRGraph(filtered_tokens, N)
                 iter_cnt = graph.calculate_textrank()
-                rev_sorted_scores = sorted(graph.V.items(), key=lambda x : x[1], reverse=True)
-                potential_keywords, potential_keywords_score = graph.get_potentials(rev_sorted_scores)                
-                final_keywords = remove_duplicate(multi_word_keyword(potential_keywords, filtered_tokens))
-                kw_score = combine_and_sort(potential_keywords, potential_keywords_score)
+                keywords, keywords_score = graph.get_keywords()
+                final_keywords = remove_duplicate(multi_word_keyword(keywords, filtered_tokens))
+                kw_score = combine_and_sort(keywords, keywords_score)
 
                 session.clear()
                 session['iter_cnt'] = iter_cnt
