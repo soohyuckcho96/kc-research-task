@@ -12,7 +12,7 @@ class TRGraph(object):
         self.unique_cnt = len(unique_words)
         self.T = self.unique_cnt // 3
         self.conversion = {unique_words[i] : i for i in range(self.unique_cnt)}
-        self.V = {self.conversion[v] : 1 for v in unique_words}
+        self.S = {self.conversion[v] : 1 for v in unique_words}
         self.E = {self.conversion[v] : [] for v in unique_words}
         self.jump_factor = 0.85
         self.threshold = 0.0001
@@ -39,7 +39,7 @@ class TRGraph(object):
         neighbor_list = self.E[word]
         temp = 0
         for neighbor in neighbor_list:
-            temp += self.V[neighbor] / len(self.E[neighbor])
+            temp += self.S[neighbor] / len(self.E[neighbor])
         return (1 - self.jump_factor) + self.jump_factor * temp
 
     def calculate_textrank(self):
@@ -47,9 +47,9 @@ class TRGraph(object):
         i = 0
         iter_cnt = 0
         while not all(flags):
-            prev_score = self.V[i]
+            prev_score = self.S[i]
             curr_score = self.score_of(i)
-            self.V[i] = curr_score
+            self.S[i] = curr_score
             if abs(prev_score - curr_score) < self.threshold:
                 flags[i] = True
             i = (i + 1) % self.unique_cnt
@@ -58,7 +58,7 @@ class TRGraph(object):
         return iter_cnt
 
     def get_keywords(self):
-        kw = list(sorted(self.V.items(), key=lambda x : x[1], reverse=True)[:self.T])
+        kw = list(sorted(self.S.items(), key=lambda x : x[1], reverse=True)[:self.T])
         keywords = []
         keywords_score = []
         for t in kw:
@@ -178,7 +178,7 @@ class MPGraph(object):
         self.unique_cnt = len(offset_dict)
         unique_words = list(offset_dict.keys())
         self.conversion = {unique_words[i] : i for i in range(self.unique_cnt)}
-        self.V = {self.conversion[v] : 1 for v in unique_words}
+        self.S = {self.conversion[v] : 1 for v in unique_words}
         self.M = [[0 for _ in range(self.unique_cnt)] for _ in range(self.unique_cnt)]
         self.alpha = 1.1
         self.damping_factor = 0.85
@@ -218,7 +218,7 @@ class MPGraph(object):
         temp = 0
         for j in range(self.unique_cnt):
             if self.M[j][i] != 0:
-                temp += self.M[i][j] * self.V[j] / sum(self.M[j])
+                temp += self.M[i][j] * self.S[j] / sum(self.M[j])
         return (1 - self.damping_factor) + self.damping_factor * temp
 
     def calculate_textrank(self):
@@ -226,9 +226,9 @@ class MPGraph(object):
         i = 0
         iter_cnt = 0
         while not all(flags):
-            prev_score = self.V[i]
+            prev_score = self.S[i]
             curr_score = self.score_of(i)
-            self.V[i] = curr_score
+            self.S[i] = curr_score
             if abs(prev_score - curr_score) < self.threshold:
                 flags[i] = True
             i = (i + 1) % self.unique_cnt
@@ -237,7 +237,7 @@ class MPGraph(object):
         return iter_cnt
 
     def get_keyphrases(self, N):
-        kw = list(sorted(self.V.items(), key=lambda x : x[1], reverse=True)[:N])
+        kw = list(sorted(self.S.items(), key=lambda x : x[1], reverse=True)[:N])
         keywords = []
         keywords_score = []
         for t in kw:

@@ -9,8 +9,8 @@
     <label for="source">Paper Abstract</label>
     <textarea name="source" id="source" spellcheck="false">{{ request.form['source'] }}</textarea>
 
-    <label for="window">Number of keyphrases (between 1 and 10) : N</label>
-    <input type="number" name="num" id="num" value="5" min="1" max="10" required/>
+    <label for="window">Number of keyphrases (between 2 and 10) : N</label>
+    <input type="number" name="num" id="num" value="5" min="2" max="10"  required/>
     <br>
     <input type="submit" value="Visualize">
   </form>

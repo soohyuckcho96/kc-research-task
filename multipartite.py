@@ -20,7 +20,11 @@ def multipartite():
         else:
             filtered_tokens = mp_filter(source)
             candidate_list, offset_dict = get_candidates(filtered_tokens)
+            print(candidate_list)
+            print(offset_dict)
             topic_group_dict, first_occurence = group_by_topics(candidate_list)
+            print(topic_group_dict)
+            print(first_occurence)
             k = len(topic_group_dict)
             topic_assign_dict = topic_assignment(candidate_list, topic_group_dict)
             graph = MPGraph(offset_dict, topic_assign_dict, first_occurence)
