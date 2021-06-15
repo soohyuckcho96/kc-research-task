@@ -2,7 +2,7 @@ from flask import (
     Blueprint, flash, redirect, render_template, request, session, url_for
 )
 
-from lexicalgraph import MPGraph
+from graphmodel.mpgraph import MPGraph
 from constant import *
 from function import *
 

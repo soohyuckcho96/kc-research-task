@@ -2,7 +2,7 @@ from flask import (
     Blueprint, flash, redirect, render_template, request, session, url_for
 )
 
-from lexicalgraph import TRGraph
+from graphmodel.trgraph import TRGraph
 from constant import *
 from function import *
 

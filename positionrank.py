@@ -2,7 +2,7 @@ from flask import (
     Blueprint, flash, redirect, render_template, request, session, url_for
 )
 
-from lexicalgraph import PRGraph
+from graphmodel.prgraph import PRGraph
 from function import *
 
 bp = Blueprint('positionrank', __name__, url_prefix='/pr')
