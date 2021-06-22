@@ -219,7 +219,6 @@ class Attention(nn.Module):
 
         return h_tilde, attn
 
-
 class Seq2SeqLSTMAttention(nn.Module):
     """Container module with an encoder, deocder, embeddings."""
 
@@ -227,17 +226,20 @@ class Seq2SeqLSTMAttention(nn.Module):
         """Initialize model."""
         super(Seq2SeqLSTMAttention, self).__init__()
 
-        self.vocab_size = opt.vocab_size
-        self.emb_dim = opt.word_vec_size
-        self.num_directions = 2 if opt.bidirectional else 1
-        self.src_hidden_dim = opt.rnn_size
-        self.trg_hidden_dim = opt.rnn_size
-        self.ctx_hidden_dim = opt.rnn_size
-        self.batch_size = opt.batch_size
+        self.vocab_size = opt.vocab_size # 50000
+        self.emb_dim = opt.word_vec_size # 128
+        # encoder : one-layer biLSTM
+        # decoder : one-layer LSTM
         self.bidirectional = opt.bidirectional
-        self.nlayers_src = opt.enc_layers
-        self.nlayers_trg = opt.dec_layers
-        self.dropout = opt.dropout
+        self.num_directions = 2 if opt.bidirectional else 1
+        self.src_hidden_dim = opt.rnn_size # 512
+        self.trg_hidden_dim = opt.rnn_size # 512
+        self.ctx_hidden_dim = opt.rnn_size # 512
+        # pre-train : 64 / fine-tune : 32
+        self.batch_size = opt.batch_size
+        self.nlayers_src = opt.enc_layers # 1
+        self.nlayers_trg = opt.dec_layers # 1
+        self.dropout = opt.dropout # 0.3
 
         self.pad_token_src = opt.word2id[pykp.io.PAD_WORD]
         self.pad_token_trg = opt.word2id[pykp.io.PAD_WORD]
@@ -246,7 +248,7 @@ class Seq2SeqLSTMAttention(nn.Module):
         self.attention_mode = opt.attention_mode    # 'dot', 'general', 'concat'
         self.input_feeding = opt.input_feeding
 
-        self.copy_attention = opt.copy_attention    # bool, enable copy attention or not
+        self.copy_attention = opt.copy_attention # True  # bool, enable copy attention or not
         self.copy_mode = opt.copy_mode         # same to `attention_mode`
         self.copy_input_feeding = opt.copy_input_feeding
         self.reuse_copy_attn = opt.reuse_copy_attn

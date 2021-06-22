@@ -1,0 +1,33 @@
+Synthetic Keyphrase Construction
+
+1. construct synthetic labeled data
+2. mix with labeled data
+3. Unsupervised Learning Methods : TF-IDF, TextRank
+4. select top 5 keyphrases and union them
+5. concatenate the terms
+6. Training Procedure : Algorithm 2
+7. Datasets
+    small-scale labeled dataset : 40K
+    large-scale unlabeled dataset : 400K
+    validation set : labeled 5K (pretrain, fine-tune)
+    extra) large-scale labeled dataset : 130K
+    > inspec, nus, krapivin, semeval, kp20k
+8. Experimental Settings
+    tokenize with nltk, lowercased, numbers to '<digit>'
+    source text max len : 200
+    target text max len : 40
+    encoder, decoder vocab size : 50K
+    word embedding size : 128 + random init, learn during training
+    hidden vector size : 512
+    dropout rate : 0.3
+    maximal gradient normalization : 2
+    optimizer : Adagrad
+    learning rate : 0.15
+    initial accumulator rate : 0.1
+    batch size : 64 (pre-train) -> 32 (fine-tune)
+    after 8 epochs, lr /= 2
+
+
+
+
+

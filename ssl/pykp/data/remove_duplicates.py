@@ -170,8 +170,8 @@ def main():
     if opt.datatype == 'paper':
         total_num = 530809
         train_dataset_name = 'kp20k_training'
-        # test_dataset_names = ['kp20k', 'inspec', 'nus', 'semeval', 'krapivin']
-        test_dataset_names = ['kp20k']
+        test_dataset_names = ['kp20k', 'inspec', 'nus', 'semeval', 'krapivin']
+        # test_dataset_names = ['kp20k']
         train_id_field, train_title_field, train_text_field, train_keyword_field = None, 'title', 'abstract', 'keyword'
         test_id_field, test_title_field, test_text_field, test_keyword_field = None, 'title', 'abstract', 'keyword'
         trg_delimiter = ';'
